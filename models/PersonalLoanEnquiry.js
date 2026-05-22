@@ -31,7 +31,7 @@ const personalLoanEnquirySchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Loan amount is required'],
     min: [10000, 'Loan amount must be at least ₹10,000'],
-    max: [50000000, 'Loan amount cannot exceed ₹5 Crore']
+    max: [10000000, 'Loan amount cannot exceed ₹1 Crore']
   },
   employmentType: {
     type: String,
