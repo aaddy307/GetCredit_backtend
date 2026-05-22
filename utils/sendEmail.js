@@ -1,5 +1,7 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const Admin = require('../models/Admin');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const BRAND = {
   name: 'Get Credit',
@@ -73,26 +75,10 @@ function baseWrapper(content) {
     </div></div></body></html>`;
 }
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-transporter.verify((error, success) => {
-  if (error) {
-    console.log('SMTP Error:', error);
-  } else {
-    console.log('SMTP Server Ready');
-  }
-});
+const FROM_ADDRESS = 'Get Credit <support@get-credit.in>';
 
 const sendCustomerEmail = async (email, name, loanType, emi, tenure) => {
-  if (!process.env.EMAIL_PASS || process.env.EMAIL_PASS === 'your_email_password_here') return;
+  if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_xxxxxxxxxxxx') return;
 
   const isCallback = loanType === 'Callback Request';
   const formattedEmi = emi ? `₹${Number(emi).toLocaleString()}` : '—';
@@ -108,33 +94,33 @@ const sendCustomerEmail = async (email, name, loanType, emi, tenure) => {
       </div>`;
   }
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: isCallback
-      ? 'Callback Request Received – Get Credit'
-      : 'Enquiry Submitted Successfully – Get Credit',
-    html: baseWrapper(`
-      <h2>Dear ${name},</h2>
-      <p>Thank you for reaching out to <strong>${BRAND.name}</strong>.</p>
-      <p>${isCallback
-        ? 'We have received your callback request. One of our loan experts will contact you within <strong>24 hours</strong>.'
-        : 'Your loan enquiry has been submitted successfully. Our team will review your details and get back to you shortly.'}</p>
-      ${detailsHTML}
-      <div class="divider"></div>
-      <p style="font-size:14px;">If you have any questions in the meantime, feel free to:</p>
-      <p style="font-size:14px;">📞 <strong>+91 7738205198</strong> / <strong>+91 8408926551</strong> / <strong>+91 8793604734</strong> &nbsp;|&nbsp; ✉️ <strong>support@get-credit.in</strong></p>
-      <p>Warm regards,<br><strong>The ${BRAND.name} Team</strong></p>
-    `),
-  };
-
   try {
-    await transporter.sendMail(mailOptions);
-  } catch (error) {}
+    await resend.emails.send({
+      from: FROM_ADDRESS,
+      to: email,
+      subject: isCallback
+        ? 'Callback Request Received – Get Credit'
+        : 'Enquiry Submitted Successfully – Get Credit',
+      html: baseWrapper(`
+        <h2>Dear ${name},</h2>
+        <p>Thank you for reaching out to <strong>${BRAND.name}</strong>.</p>
+        <p>${isCallback
+          ? 'We have received your callback request. One of our loan experts will contact you within <strong>24 hours</strong>.'
+          : 'Your loan enquiry has been submitted successfully. Our team will review your details and get back to you shortly.'}</p>
+        ${detailsHTML}
+        <div class="divider"></div>
+        <p style="font-size:14px;">If you have any questions in the meantime, feel free to:</p>
+        <p style="font-size:14px;">📞 <strong>+91 7738205198</strong> / <strong>+91 8408926551</strong> / <strong>+91 8793604734</strong> &nbsp;|&nbsp; ✉️ <strong>support@get-credit.in</strong></p>
+        <p>Warm regards,<br><strong>The ${BRAND.name} Team</strong></p>
+      `),
+    });
+  } catch (error) {
+    console.error('Customer email error:', error.message);
+  }
 };
 
 const sendAdminNotification = async (enquiry) => {
-  if (!process.env.EMAIL_PASS || process.env.EMAIL_PASS === 'your_app_password_here') return;
+  if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_xxxxxxxxxxxx') return;
 
   const adminEmail = process.env.ADMIN_EMAIL;
   const isCallbackRequest = enquiry.loanType === 'Callback Request';
@@ -186,17 +172,15 @@ const sendAdminNotification = async (enquiry) => {
       <p style="text-align:center;color:#cc4444;font-weight:600;margin-top:16px;">⚡ Action Required — Contact the customer within 24 hours.</p>`;
   }
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: adminEmail,
-    subject: isCallbackRequest
-      ? 'New Callback Request – Get Credit Admin'
-      : `New ${enquiry.loanType} Enquiry – Get Credit Admin`,
-    html: baseWrapper(content),
-  };
-
   try {
-    await transporter.sendMail(mailOptions);
+    await resend.emails.send({
+      from: FROM_ADDRESS,
+      to: adminEmail,
+      subject: isCallbackRequest
+        ? 'New Callback Request – Get Credit Admin'
+        : `New ${enquiry.loanType} Enquiry – Get Credit Admin`,
+      html: baseWrapper(content),
+    });
     console.log(`Admin notification sent to ${adminEmail}`);
   } catch (error) {
     console.log('Admin notification not sent (server may not be configured)');
