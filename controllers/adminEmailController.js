@@ -18,7 +18,7 @@ exports.sendEmail = async (req, res) => {
     await sendAdminComposeEmail({
       to: recipients,
       subject,
-      body: body.replace(/\n/g, '<br>'),
+      body,
     });
 
     res.json({ success: true, message: `Email sent successfully to ${recipients.join(', ')}` });
