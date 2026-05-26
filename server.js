@@ -46,13 +46,10 @@ app.use(helmet({
 // CORS configuration
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-  : (process.env.NODE_ENV === 'production' ? [] : ['http://localhost:3000']);
+  : null;
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.length === 0) {
-      return callback(null, false);
-    }
+    if (!origin || !allowedOrigins) return callback(null, true);
     if (allowedOrigins.some(o => origin.startsWith(o.replace(/\/$/, '')))) {
       return callback(null, true);
     }
