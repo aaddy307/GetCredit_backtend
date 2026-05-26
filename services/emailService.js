@@ -1,6 +1,6 @@
 const { resend, FROM_ADDRESS } = require('../lib/resend');
 
-const APP_URL = process.env.APP_URL;
+const APP_URL = process.env.APP_URL ? process.env.APP_URL.replace(/\/+$/, '') : '';
 const isTest = process.env.NODE_ENV === 'test';
 
 if (!APP_URL && !isTest) {
