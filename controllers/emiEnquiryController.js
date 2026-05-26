@@ -67,16 +67,21 @@ const createHomeLoanEnquiry = async (req, res) => {
     });
 
     const unit = tenureUnit || 'Years';
-    sendCustomerEmail(enquiry.email, enquiry.fullName, 'Home Loan', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city).catch(() => {});
-    sendAdminNotification({
-      fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
-      city: enquiry.city, loanType: 'Home Loan', loanAmount: enquiry.loanAmount,
-      interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
-      tenureUnit: unit,
-      emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
-    }).catch(() => {});
+    let emailWarning = null;
+    try {
+      await sendCustomerEmail(enquiry.email, enquiry.fullName, 'Home Loan', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city, enquiry.loanAmount);
+      await sendAdminNotification({
+        fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
+        city: enquiry.city, loanType: 'Home Loan', loanAmount: enquiry.loanAmount,
+        interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
+        tenureUnit: unit,
+        emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
+      });
+    } catch (e) {
+      emailWarning = e.message;
+    }
 
-    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry });
+    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry, ...(emailWarning ? { emailWarning } : {}) });
   } catch (error) {
     console.error('Home Loan Enquiry Error:', error);
     res.status(500).json({ success: false, errors: ['Server error. Please try again.'] });
@@ -109,16 +114,21 @@ const createLAPEnquiry = async (req, res) => {
     });
 
     const unit = tenureUnit || 'Years';
-    sendCustomerEmail(enquiry.email, enquiry.fullName, 'Loan Against Property', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city).catch(() => {});
-    sendAdminNotification({
-      fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
-      city: enquiry.city, loanType: 'Loan Against Property', loanAmount: enquiry.loanAmount,
-      interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
-      tenureUnit: unit,
-      emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
-    }).catch(() => {});
+    let emailWarning = null;
+    try {
+      await sendCustomerEmail(enquiry.email, enquiry.fullName, 'Loan Against Property', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city, enquiry.loanAmount);
+      await sendAdminNotification({
+        fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
+        city: enquiry.city, loanType: 'Loan Against Property', loanAmount: enquiry.loanAmount,
+        interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
+        tenureUnit: unit,
+        emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
+      });
+    } catch (e) {
+      emailWarning = e.message;
+    }
 
-    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry });
+    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry, ...(emailWarning ? { emailWarning } : {}) });
   } catch (error) {
     console.error('LAP Enquiry Error:', error);
     res.status(500).json({ success: false, errors: ['Server error. Please try again.'] });
@@ -153,16 +163,21 @@ const createEducationLoanEnquiry = async (req, res) => {
     });
 
     const unit = tenureUnit || 'Years';
-    sendCustomerEmail(enquiry.email, enquiry.fullName, 'Education Loan', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city).catch(() => {});
-    sendAdminNotification({
-      fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
-      city: enquiry.city, loanType: 'Education Loan', loanAmount: enquiry.loanAmount,
-      interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
-      tenureUnit: unit,
-      emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
-    }).catch(() => {});
+    let emailWarning = null;
+    try {
+      await sendCustomerEmail(enquiry.email, enquiry.fullName, 'Education Loan', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city, enquiry.loanAmount);
+      await sendAdminNotification({
+        fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
+        city: enquiry.city, loanType: 'Education Loan', loanAmount: enquiry.loanAmount,
+        interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
+        tenureUnit: unit,
+        emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
+      });
+    } catch (e) {
+      emailWarning = e.message;
+    }
 
-    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry });
+    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry, ...(emailWarning ? { emailWarning } : {}) });
   } catch (error) {
     console.error('Education Loan Enquiry Error:', error);
     res.status(500).json({ success: false, errors: ['Server error. Please try again.'] });
@@ -193,16 +208,21 @@ const createPersonalLoanEnquiry = async (req, res) => {
     });
 
     const unit = tenureUnit || 'Months';
-    sendCustomerEmail(enquiry.email, enquiry.fullName, 'Personal Loan', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city).catch(() => {});
-    sendAdminNotification({
-      fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
-      city: enquiry.city, loanType: 'Personal Loan', loanAmount: enquiry.loanAmount,
-      interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
-      tenureUnit: unit,
-      emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
-    }).catch(() => {});
+    let emailWarning = null;
+    try {
+      await sendCustomerEmail(enquiry.email, enquiry.fullName, 'Personal Loan', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city, enquiry.loanAmount);
+      await sendAdminNotification({
+        fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
+        city: enquiry.city, loanType: 'Personal Loan', loanAmount: enquiry.loanAmount,
+        interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
+        tenureUnit: unit,
+        emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
+      });
+    } catch (e) {
+      emailWarning = e.message;
+    }
 
-    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry });
+    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry, ...(emailWarning ? { emailWarning } : {}) });
   } catch (error) {
     console.error('Personal Loan Enquiry Error:', error);
     res.status(500).json({ success: false, errors: ['Server error. Please try again.'] });
@@ -235,16 +255,21 @@ const createBusinessLoanEnquiry = async (req, res) => {
     });
 
     const unit = tenureUnit || 'Months';
-    sendCustomerEmail(enquiry.email, enquiry.fullName, 'Business Loan', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city).catch(() => {});
-    sendAdminNotification({
-      fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
-      city: enquiry.city, loanType: 'Business Loan', loanAmount: enquiry.loanAmount,
-      interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
-      tenureUnit: unit,
-      emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
-    }).catch(() => {});
+    let emailWarning = null;
+    try {
+      await sendCustomerEmail(enquiry.email, enquiry.fullName, 'Business Loan', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city, enquiry.loanAmount);
+      await sendAdminNotification({
+        fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
+        city: enquiry.city, loanType: 'Business Loan', loanAmount: enquiry.loanAmount,
+        interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
+        tenureUnit: unit,
+        emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
+      });
+    } catch (e) {
+      emailWarning = e.message;
+    }
 
-    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry });
+    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry, ...(emailWarning ? { emailWarning } : {}) });
   } catch (error) {
     console.error('Business Loan Enquiry Error:', error);
     res.status(500).json({ success: false, errors: ['Server error. Please try again.'] });
@@ -275,16 +300,21 @@ const createVehicleLoanEnquiry = async (req, res) => {
     });
 
     const unit = tenureUnit || 'Years';
-    sendCustomerEmail(enquiry.email, enquiry.fullName, 'Vehicle Loan', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city).catch(() => {});
-    sendAdminNotification({
-      fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
-      city: enquiry.city, loanType: 'Vehicle Loan', loanAmount: enquiry.loanAmount,
-      interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
-      tenureUnit: unit,
-      emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
-    }).catch(() => {});
+    let emailWarning = null;
+    try {
+      await sendCustomerEmail(enquiry.email, enquiry.fullName, 'Vehicle Loan', enquiry.calculatedEMI, enquiry.tenureYears, unit, enquiry.mobile, enquiry.city, enquiry.loanAmount);
+      await sendAdminNotification({
+        fullName: enquiry.fullName, phone: enquiry.mobile, email: enquiry.email,
+        city: enquiry.city, loanType: 'Vehicle Loan', loanAmount: enquiry.loanAmount,
+        interestRate: enquiry.interestRate, tenure: enquiry.tenureYears,
+        tenureUnit: unit,
+        emi: enquiry.calculatedEMI, createdAt: enquiry.createdAt
+      });
+    } catch (e) {
+      emailWarning = e.message;
+    }
 
-    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry });
+    res.status(201).json({ success: true, message: 'Enquiry submitted successfully', data: enquiry, ...(emailWarning ? { emailWarning } : {}) });
   } catch (error) {
     console.error('Vehicle Loan Enquiry Error:', error);
     res.status(500).json({ success: false, errors: ['Server error. Please try again.'] });

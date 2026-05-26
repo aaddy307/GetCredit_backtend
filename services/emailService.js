@@ -1,10 +1,16 @@
 const { resend, FROM_ADDRESS } = require('../lib/resend');
 
-const APP_URL = process.env.APP_URL || 'http://localhost:3000';
+const APP_URL = process.env.APP_URL;
 const isTest = process.env.NODE_ENV === 'test';
+
+if (!APP_URL && !isTest) {
+  console.warn('⚠️  APP_URL is not set. Set it to your Next.js URL (e.g. https://get-credit.in) for email templates to render.');
+}
 
 async function renderTemplate(template, data) {
   try {
+    if (!APP_URL) throw new Error('APP_URL is not configured');
+
     const response = await fetch(`${APP_URL}/api/emails/render`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -19,7 +25,7 @@ async function renderTemplate(template, data) {
     const { html } = await response.json();
     return html;
   } catch (error) {
-    console.error(`Render error for template "${template}":`, error.message);
+    console.error(`❌ Render error for template "${template}":`, error.message);
     throw error;
   }
 }
@@ -43,16 +49,20 @@ async function sendEmail({ to, subject, template, data }) {
 
     const recipients = Array.isArray(to) ? to : [to];
 
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: FROM_ADDRESS,
       to: recipients,
       subject,
       html,
     });
 
-    console.log(`Email sent: "${subject}" to ${recipients.join(', ')}`);
+    if (result?.error) {
+      throw new Error(`Resend error: ${result.error.message || JSON.stringify(result.error)}`);
+    }
+
+    console.log(`✓ Email sent: "${subject}" to ${recipients.join(', ')}`);
   } catch (error) {
-    console.error(`Email send error for "${subject}":`, error.message);
+    console.error(`❌ Email send error for "${subject}":`, error.message);
     throw error;
   }
 }

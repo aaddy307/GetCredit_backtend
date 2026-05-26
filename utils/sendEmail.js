@@ -7,7 +7,7 @@ const {
 
 const isTest = process.env.NODE_ENV === 'test';
 
-const sendCustomerEmail = async (email, name, loanType, emi, tenure, tenureUnit, phone = '', city = '') => {
+const sendCustomerEmail = async (email, name, loanType, emi, tenure, tenureUnit, phone = '', city = '', loanAmount) => {
   if (isTest) return;
   try {
     const isCallback = loanType === 'Callback Request';
@@ -21,6 +21,7 @@ const sendCustomerEmail = async (email, name, loanType, emi, tenure, tenureUnit,
       toEmail: email,
       name,
       loanType,
+      loanAmount: loanAmount || undefined,
       emi: emi || undefined,
       tenure: tenure || undefined,
       tenureUnit: tenureUnit || undefined,
@@ -28,7 +29,7 @@ const sendCustomerEmail = async (email, name, loanType, emi, tenure, tenureUnit,
       createdAt: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Customer email error:', error.message);
+    console.error(`❌ Customer email to ${email} failed:`, error.message);
   }
 };
 
@@ -65,7 +66,7 @@ const sendAdminNotification = async (enquiry) => {
       createdAt: enquiry.createdAt,
     });
   } catch (error) {
-    console.error('Admin notification error:', error.message);
+    console.error(`❌ Admin notification for ${enquiry?.fullName || 'unknown'} failed:`, error.message);
   }
 };
 

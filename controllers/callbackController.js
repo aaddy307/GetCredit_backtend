@@ -45,24 +45,30 @@ const createCallbackRequest = async (req, res) => {
       source: 'Website - Callback Request'
     });
 
-    sendCustomerEmail(callback.email, callback.fullName, 'Callback Request', 0, 0, callback.phone).catch(() => {});
-    sendAdminNotification({
-      fullName: callback.fullName,
-      phone: callback.phone,
-      email: callback.email,
-      city: callback.city,
-      loanType: 'Callback Request',
-      loanAmount: 0,
-      interestRate: 0,
-      tenure: 0,
-      emi: 0,
-      createdAt: callback.createdAt
-    }).catch(() => {});
+    let emailWarning = null;
+    try {
+      await sendCustomerEmail(callback.email, callback.fullName, 'Callback Request', 0, 0, callback.phone);
+      await sendAdminNotification({
+        fullName: callback.fullName,
+        phone: callback.phone,
+        email: callback.email,
+        city: callback.city,
+        loanType: 'Callback Request',
+        loanAmount: 0,
+        interestRate: 0,
+        tenure: 0,
+        emi: 0,
+        createdAt: callback.createdAt
+      });
+    } catch (e) {
+      emailWarning = e.message;
+    }
 
     res.status(201).json({ 
       success: true, 
       message: 'Callback request submitted successfully',
-      data: callback
+      data: callback,
+      ...(emailWarning ? { emailWarning } : {})
     });
   } catch (error) {
     console.error('Callback Request Error:', error);

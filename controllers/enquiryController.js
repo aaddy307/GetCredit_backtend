@@ -130,14 +130,20 @@ exports.createEnquiry = async (req, res) => {
 
     const enquiry = await Enquiry.create(enquiryData);
 
-    if (!isCallbackRequest) {
-      sendCustomerEmail(email, fullName, loanType, calculatedEmi, tenure, tenureUnit, phone, city).catch(() => {});
+    let emailWarning = null;
+    try {
+      if (!isCallbackRequest) {
+        await sendCustomerEmail(email, fullName, loanType, calculatedEmi, tenure, tenureUnit, phone, city, loanAmount);
+      }
+      await sendAdminNotification(enquiry);
+    } catch (e) {
+      emailWarning = e.message;
     }
-    sendAdminNotification(enquiry).catch(() => {});
 
     res.status(201).json({
       success: true,
-      message: 'Enquiry submitted successfully'
+      message: 'Enquiry submitted successfully',
+      ...(emailWarning ? { emailWarning } : {})
     });
   } catch (error) {
     console.error('Create enquiry error:', error);
